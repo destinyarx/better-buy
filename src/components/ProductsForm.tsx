@@ -1,105 +1,67 @@
-"use client";
+"use client"
 
-import * as React from "react";
+import { useState, useCallback } from 'react';
+import { UnitType, UnitCode, Currency, ProductDraft } from '@/types/types'
+import { UNIT_CATEGORY, UNIT_MEASUREMENT, LABEL, ITEM_LOGO, Q_PLACEHOLDER } from '@/constants/units'
+import Image from 'next/image';
+
 import {
   Card,
   CardHeader,
   CardTitle,
   CardContent,
   CardFooter,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
-import { ChevronRight, Plus, Trash2, Calculator } from "lucide-react";
-import Image from "next/image";
-
-
-type UnitType = "each" | "liter" | "kg" | "inch";
-type Currency = "USD" | "PHP" | "EUR";
-
-type ProductDraft = {
-  id: number;
-  title: string,
-  price: string;    // keep as string for input UX
-  quantity: string; // keep as string for input UX
-};
+} from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
+import ResultModal from './ResultsModal';
+import { ChevronRight, Plus, Trash2, Calculator } from 'lucide-react';
 
 let id = 0;
-
-const emptyRow = (): ProductDraft => ({ id: id++, price: "", quantity: "" });
-
-const UNIT_LABEL: Record<UnitType, string> = {
-  each: "each",
-  liter: "liter",
-  kg: "kg",
-  inch: "in",
-};
-
-const ITEM_LOGO: Record<UnitType, string> = {
-  each: "/fruits.png",
-  liter: "/bottle-icon.png",
-  kg: "/meat.png",
-  inch: "/zucchini.png",
-}
-
-const Q_PLACEHOLDER: Record<UnitType, string> = {
-  each: "1",
-  liter: "1.5",
-  kg: "2",
-  inch: "12",
-};
-
-
+const emptyRow = (): ProductDraft => ({ id: id++, title: '', price: undefined, quantity: undefined });
 
 function formatMoney(n: number, currency: Currency, locale?: string) {
   try {
     return new Intl.NumberFormat(locale ?? (currency === "PHP" ? "en-PH" : undefined), {
-      style: "currency",
+      style: 'currency',
       currency,
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    }).format(Number.isFinite(n) ? n : 0);
+    }).format(n ?? 0);
   } catch {
     return `${currency} ${n.toFixed(2)}`;
   }
 }
 
-export default function ProductsForm({
-  defaultCurrency = "PHP",
-  defaultUnit = "liter",
-}: {
-  defaultCurrency?: Currency;
-  defaultUnit?: UnitType;
-}) {
-  const [rows, setRows] = React.useState<ProductDraft[]>([emptyRow(), emptyRow(), emptyRow()]);
-  const [unit, setUnit] = React.useState<UnitType>(defaultUnit);
-  const [currency, setCurrency] = React.useState<Currency>(defaultCurrency);
+export default function ProductsForm() {
+  const [rows, setRows] = useState<ProductDraft[]>([emptyRow()]);
+  const [unit, setUnit] = useState<UnitType>('mass');
+  const [unitMeasurement, setUnitMeasurement] = useState<UnitCode>('mg');
+  const [currency, setCurrency] = useState<Currency>('PHP');
 
   const addRow = () => setRows((prev) => [...prev, emptyRow()]);
   const clearAll = () => setRows([emptyRow()]);
-  const removeRow = (id: number) =>
-    setRows((prev) => (prev.length === 1 ? prev : prev.filter((r) => r.id !== id)));
+  const removeRow = (id: number) => 
+    setRows((prev) => (prev.length === 1 ? prev : prev.filter((row) => row.id !== id)));
 
   const handleChange = (id: number, field: keyof ProductDraft, value: string) => {
-    setRows((prev) => prev.map((r) => (r.id === id ? { ...r, [field]: value } : r)));
+    setRows((prev) => prev.map((row) => (row.id === id ? { ...row, [field]: value } : row)));
   };
 
-  const computePerUnit = React.useCallback(
-    (price: string, qty: string) => {
-      const p = Number(price.replace(/,/g, "."));
-      const q = Number(qty.replace(/,/g, "."));
-      if (!Number.isFinite(p) || !Number.isFinite(q) || q <= 0) return null;
-      return p / q;
+  const computePerUnit = useCallback(
+    (price: number|undefined, quantity: number|undefined) => {
+      if (!price || !quantity) return null;
+
+      return price / quantity;
     },
-    []
-  );
+  []);
 
   const onCalculate = (e: React.FormEvent) => {
+    console.log('Computeee mo')
     e.preventDefault();
-    // No submit action yet—this button mirrors the UX in the mock.
   };
 
   return (
@@ -107,16 +69,19 @@ export default function ProductsForm({
       <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <CardTitle className="text-2xl">COST PER UNIT</CardTitle>
 
+        <ResultModal/>
+      
         <div className="flex gap-2">
           <Select value={unit} onValueChange={(v) => setUnit(v as UnitType)}>
             <SelectTrigger className="w-40">
-              <SelectValue placeholder="Unit" />
+              <SelectValue placeholder="Select Category" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="liter">Liquid</SelectItem>
-              <SelectItem value="kg">Weight</SelectItem>
-              <SelectItem value="inch">Length</SelectItem>
-              <SelectItem value="each">Each</SelectItem>
+              <SelectItem value="mass">Mass</SelectItem>
+              <SelectItem value="volume">Volume</SelectItem>
+              <SelectItem value="length">Length</SelectItem>
+              <SelectItem value="circular">Circular</SelectItem>
+              <SelectItem value="quantity">Quantity</SelectItem>
             </SelectContent>
           </Select>
 
@@ -142,7 +107,7 @@ export default function ProductsForm({
             const perUnit = computePerUnit(row.price, row.quantity);
             return (
               <div key={row.id} className="px-6 py-6">
-                <div className="grid items-start gap-10 sm:grid-cols-[5%_auto_15%_20%_10%5%]">
+                <div className="grid items-start gap-10 lg:grid-cols-[5%_auto_17%_22%_12%_5%]">
                   <Image
                     src={ITEM_LOGO[unit]}
                     alt="Water Bottle Logo"
@@ -162,7 +127,7 @@ export default function ProductsForm({
                         className="pl-10 text-right"
                         value={row.title}
                         onChange={(e) => handleChange(row.id, "title", e.target.value)}
-                        aria-label={`Product ${idx + 1} price`}
+                        required
                       />
                     </div>
                   </div>
@@ -178,11 +143,11 @@ export default function ProductsForm({
                         id={`price-${row.id}`}
                         type="number"
                         inputMode="decimal"
-                        placeholder={currency === "PHP" ? "156" : "0.00"}
+                        placeholder="0.00"
                         className="pl-10 text-right"
                         value={row.price}
                         onChange={(e) => handleChange(row.id, "price", e.target.value)}
-                        aria-label={`Product ${idx + 1} price`}
+                        required
                       />
                     </div>
                   </div>
@@ -191,41 +156,43 @@ export default function ProductsForm({
                   <div className="space-y-2">
                     <Label htmlFor={`qty-${row.id}`}>Quantity</Label>
                     <div className="flex flex-row gap-2">
-                      <Input
-                        id={`qty-${row.id}`}
-                        type="number"
-                        inputMode="decimal"
-                        placeholder={Q_PLACEHOLDER[unit]}
-                        className="text-right"
-                        value={row.quantity}
-                        onChange={(e) => handleChange(row.id, "quantity", e.target.value)}
-                        aria-label={`Product ${idx + 1} quantity`}
-                      />
+                      <div className="relative">
+                        <Input
+                          id={`qty-${row.id}`}
+                          type="number"
+                          inputMode="decimal"
+                          placeholder="0"
+                          className="text-right pr-10"
+                          value={row.quantity}
+                          onChange={(e) => handleChange(row.id, "quantity", e.target.value)}
+                          required
+                        />    
 
-                      <Select value={unit} onValueChange={(v) => setUnit(v as UnitType)}>
+                        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+                          /{unitMeasurement ?? null}
+                        </span>
+                      </div>
+
+                      {/* Unit measurement  */}
+                      <Select value={unitMeasurement} onValueChange={(v) => setUnitMeasurement(v as UnitCode)}>
                         <SelectTrigger className="w-50">
-                          <SelectValue placeholder="Unit" />
+                          <SelectValue placeholder="Unit"/>
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="liter">Liquid</SelectItem>
-                          <SelectItem value="kg">Weight</SelectItem>
-                          <SelectItem value="inch">Length</SelectItem>
-                          <SelectItem value="each">Each</SelectItem>
+                          {UNIT_MEASUREMENT[unit].map((code) => (
+                            <SelectItem key={code} value={code}>
+                              {LABEL[code]}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
-
-                      {/* TODO: Add unit dropdown here */}
                     </div>
                   </div>                
 
                   <div className="mt-7 flex justify-center items-center">
-                    {/* <Label className="text-xs" htmlFor={`qty-${row.id}`}>
-                      Price per Unit
-                    </Label> */}
-
                     <ChevronRight className="h-6 w-6 text-muted-foreground" aria-hidden />
                     <div className="text-lg font-semibold tabular-nums">
-                      {perUnit == null ? "—" : `${formatMoney(perUnit, currency)} / ${UNIT_LABEL[unit]}`}
+                      {perUnit == null ? "—" : `${formatMoney(perUnit, currency)} / ${UNIT_CATEGORY[unit]}`}
                     </div>
                   </div>
 
@@ -261,10 +228,15 @@ export default function ProductsForm({
             </Button>
           </div>
 
-          <Button type="submit" className="w-full sm:w-auto bg-slate-800 text-white">
+          <Button
+            type="submit"
+            disabled={rows.length < 2}
+            className="w-full sm:w-auto bg-slate-800 text-white"
+          >
             <Calculator className="mr-1 h-4 w-4" />
             Compare
           </Button>
+
         </CardFooter>
       </form>
     </Card>
