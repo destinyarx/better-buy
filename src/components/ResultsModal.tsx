@@ -1,16 +1,27 @@
+import { Result } from '@/types/types'
+
 import {
     Dialog,
     DialogContent,
     DialogDescription,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from "@/components/ui/dialog"
 
-export default function ResultModal() {
+export default function ResultModal(
+    { 
+        result, 
+        setResult 
+    }: 
+    {
+        result: Result, 
+        setResult: React.Dispatch<React.SetStateAction<Result>>
+    }) {
     return (
-        <Dialog>
-            <DialogTrigger>Open</DialogTrigger>
+        <Dialog 
+            open={result.isOpen} 
+            onOpenChange={(open) => setResult({ ...result, isOpen: open })}
+        >
             <DialogContent>
                 <DialogHeader>
                 <DialogTitle>Are you absolutely sure?</DialogTitle>

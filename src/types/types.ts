@@ -9,9 +9,13 @@ export type UnitCode =
   | "diameter" | "radius" | "circumference" | "area" // circular
   | "pc" | "dozen" | "pack" | "set" | "unit"; // quantity
 
-export type ProductDraft = {
+export interface ProductDraft {
   id: number;
   title: string,
   price: number | undefined;    // keep as string for input UX
   quantity: number | undefined; // keep as string for input UX
 };
+
+export interface Result {
+    isOpen: boolean
+}

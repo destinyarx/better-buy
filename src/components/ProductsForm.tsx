@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useCallback } from 'react';
-import { UnitType, UnitCode, Currency, ProductDraft } from '@/types/types'
+import { UnitType, UnitCode, Currency, ProductDraft, Result } from '@/types/types'
 import { UNIT_CATEGORY, UNIT_MEASUREMENT, LABEL, ITEM_LOGO, Q_PLACEHOLDER } from '@/constants/units'
 import Image from 'next/image';
 
@@ -41,6 +41,7 @@ export default function ProductsForm() {
   const [unit, setUnit] = useState<UnitType>('mass');
   const [unitMeasurement, setUnitMeasurement] = useState<UnitCode>('mg');
   const [currency, setCurrency] = useState<Currency>('PHP');
+  const [result, setResult] = useState<Result>({isOpen: false});
 
   const addRow = () => setRows((prev) => [...prev, emptyRow()]);
   const clearAll = () => setRows([emptyRow()]);
@@ -62,6 +63,8 @@ export default function ProductsForm() {
   const onCalculate = (e: React.FormEvent) => {
     console.log('Computeee mo')
     e.preventDefault();
+
+    setResult(() => ({ isOpen: true }));
   };
 
   return (
@@ -69,7 +72,7 @@ export default function ProductsForm() {
       <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <CardTitle className="text-2xl">COST PER UNIT</CardTitle>
 
-        <ResultModal/>
+        <ResultModal result={result} setResult={setResult}/>
       
         <div className="flex gap-2">
           <Select value={unit} onValueChange={(v) => setUnit(v as UnitType)}>
