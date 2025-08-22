@@ -12,8 +12,9 @@ export type UnitCode =
 export interface ProductDraft {
   id: number;
   title: string,
-  price: number | undefined;    // keep as string for input UX
-  quantity: number | undefined; // keep as string for input UX
+  price: number | undefined;
+  quantity: number | undefined; 
+  unitMeasurement: UnitCode | undefined;
 };
 
 export interface Result {

@@ -10,11 +10,11 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: "BetterBuy - Price per Unit Comparison Webapp ",
+  title: "BetterBuy",
   description: "Personal Project of Gil Jeremy Ditablan",
   icons: {
     icon: [
-      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/money.png", type: "png" },
     ],
   },
 };

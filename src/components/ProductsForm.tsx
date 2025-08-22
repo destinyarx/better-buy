@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { UnitType, UnitCode, Currency, ProductDraft, Result } from '@/types/types'
-import { UNIT_CATEGORY, UNIT_MEASUREMENT, LABEL, ITEM_LOGO, Q_PLACEHOLDER } from '@/constants/units'
+import { UNIT_MEASUREMENT, LABEL, ITEM_LOGO } from '@/constants/units'
 import Image from 'next/image';
 
 import {
@@ -21,7 +21,7 @@ import ResultModal from './ResultsModal';
 import { ChevronRight, Plus, Trash2, Calculator } from 'lucide-react';
 
 let id = 0;
-const emptyRow = (): ProductDraft => ({ id: id++, title: '', price: undefined, quantity: undefined });
+const emptyRow = (): ProductDraft => ({ id: id++, title: '', price: undefined, quantity: undefined, unitMeasurement: undefined });
 
 function formatMoney(n: number, currency: Currency, locale?: string) {
   try {
@@ -172,12 +172,15 @@ export default function ProductsForm() {
                         />    
 
                         <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                          /{unitMeasurement ?? null}
+                          /{row.unitMeasurement ?? null}
                         </span>
                       </div>
 
                       {/* Unit measurement  */}
-                      <Select value={unitMeasurement} onValueChange={(v) => setUnitMeasurement(v as UnitCode)}>
+                      <Select 
+                        value={row.unitMeasurement}
+                        onValueChange={(v) => handleChange(row.id, "unitMeasurement", v as UnitCode)}
+                      >
                         <SelectTrigger className="w-50">
                           <SelectValue placeholder="Unit"/>
                         </SelectTrigger>
@@ -195,7 +198,7 @@ export default function ProductsForm() {
                   <div className="mt-7 flex justify-center items-center">
                     <ChevronRight className="h-6 w-6 text-muted-foreground" aria-hidden />
                     <div className="text-lg font-semibold tabular-nums">
-                      {perUnit == null ? "—" : `${formatMoney(perUnit, currency)} / ${UNIT_CATEGORY[unit]}`}
+                      {perUnit == null ? "—" : `${formatMoney(perUnit, currency)} / ${unitMeasurement}`}
                     </div>
                   </div>
 
