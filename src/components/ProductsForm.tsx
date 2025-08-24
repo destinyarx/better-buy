@@ -1,8 +1,10 @@
 "use client"
 
-import { useState, useCallback } from 'react';
-import { UnitType, UnitCode, Currency, ProductDraft, Result } from '@/types/types'
-import { UNIT_MEASUREMENT, LABEL, ITEM_LOGO } from '@/constants/units'
+import { useState, useEffect, useCallback } from 'react';
+import { UnitType, UnitCode, Currency, Product } from '@/types/types'
+import { UNIT_MEASUREMENT, DEFAULT_UNIT_MEASUREMENT, LABEL, ITEM_LOGO } from '@/constants/units'
+import { formatMoney } from '@/utils/format';
+import { getBestProduct } from '@/utils/compare'
 import Image from 'next/image';
 
 import {
@@ -17,38 +19,31 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import ResultModal from './ResultsModal';
+import ResultModal from '@/components/ResultsModal';
 import { ChevronRight, Plus, Trash2, Calculator } from 'lucide-react';
 
 let id = 0;
-const emptyRow = (): ProductDraft => ({ id: id++, title: '', price: undefined, quantity: undefined, unitMeasurement: undefined });
-
-function formatMoney(n: number, currency: Currency, locale?: string) {
-  try {
-    return new Intl.NumberFormat(locale ?? (currency === "PHP" ? "en-PH" : undefined), {
-      style: 'currency',
-      currency,
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(n ?? 0);
-  } catch {
-    return `${currency} ${n.toFixed(2)}`;
-  }
-}
 
 export default function ProductsForm() {
-  const [rows, setRows] = useState<ProductDraft[]>([emptyRow()]);
   const [unit, setUnit] = useState<UnitType>('mass');
-  const [unitMeasurement, setUnitMeasurement] = useState<UnitCode>('mg');
   const [currency, setCurrency] = useState<Currency>('PHP');
-  const [result, setResult] = useState<Result>({isOpen: false});
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  
+  const emptyRow = useCallback((): Product => ({ id: id++, title: '', price: 0, quantity: 0, unitMeasurement: DEFAULT_UNIT_MEASUREMENT[unit] as UnitCode }), [unit]);
+  const [rows, setRows] = useState<Product[]>([]);
+
+  // Initialize and reset rows when unit changes
+  useEffect(() => {
+    setRows([emptyRow()]);
+  }, [emptyRow]);
+  
 
   const addRow = () => setRows((prev) => [...prev, emptyRow()]);
   const clearAll = () => setRows([emptyRow()]);
   const removeRow = (id: number) => 
     setRows((prev) => (prev.length === 1 ? prev : prev.filter((row) => row.id !== id)));
 
-  const handleChange = (id: number, field: keyof ProductDraft, value: string) => {
+  const handleChange = (id: number, field: keyof Product, value: string) => {
     setRows((prev) => prev.map((row) => (row.id === id ? { ...row, [field]: value } : row)));
   };
 
@@ -60,11 +55,21 @@ export default function ProductsForm() {
     },
   []);
 
+  const validateFields = () => {
+
+    return true
+  }
+
   const onCalculate = (e: React.FormEvent) => {
-    console.log('Computeee mo')
     e.preventDefault();
 
-    setResult(() => ({ isOpen: true }));
+    console.log(rows)
+
+    if (!validateFields) return
+
+    console.log(getBestProduct(rows, unit))
+
+    setIsModalOpen(() => (true));
   };
 
   return (
@@ -72,7 +77,7 @@ export default function ProductsForm() {
       <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <CardTitle className="text-2xl">COST PER UNIT</CardTitle>
 
-        <ResultModal result={result} setResult={setResult}/>
+        <ResultModal products={rows} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen}/>
       
         <div className="flex gap-2">
           <Select value={unit} onValueChange={(v) => setUnit(v as UnitType)}>
@@ -144,13 +149,14 @@ export default function ProductsForm() {
                       </span>
                       <Input
                         id={`price-${row.id}`}
+                        min={0}
                         type="number"
                         inputMode="decimal"
                         placeholder="0.00"
-                        className="pl-10 text-right"
                         value={row.price}
                         onChange={(e) => handleChange(row.id, "price", e.target.value)}
                         required
+                        className="pl-10 text-right"
                       />
                     </div>
                   </div>
@@ -162,13 +168,14 @@ export default function ProductsForm() {
                       <div className="relative">
                         <Input
                           id={`qty-${row.id}`}
+                          min={0}
                           type="number"
                           inputMode="decimal"
                           placeholder="0"
-                          className="text-right pr-10"
                           value={row.quantity}
                           onChange={(e) => handleChange(row.id, "quantity", e.target.value)}
                           required
+                          className="text-right pr-10"
                         />    
 
                         <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
@@ -198,7 +205,7 @@ export default function ProductsForm() {
                   <div className="mt-7 flex justify-center items-center">
                     <ChevronRight className="h-6 w-6 text-muted-foreground" aria-hidden />
                     <div className="text-lg font-semibold tabular-nums">
-                      {perUnit == null ? "—" : `${formatMoney(perUnit, currency)} / ${unitMeasurement}`}
+                      {perUnit == null ? "—" : `${formatMoney(perUnit, currency)} / ${row.unitMeasurement}`}
                     </div>
                   </div>
 

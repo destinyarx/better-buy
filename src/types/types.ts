@@ -5,18 +5,22 @@ export type Currency = "USD" | "PHP" | "EUR";
 export type UnitCode =
   | "mg" | "g" | "kg" | "t"            // mass
   | "ml" | "l" | "m3"                 // volume
-  | "mm" | "cm" | "m" | "km" | "in" | "ft" // length
-  | "diameter" | "radius" | "circumference" | "area" // circular
-  | "pc" | "dozen" | "pack" | "set" | "unit"; // quantity
+  | "mm" | "cm" | "m" | "km" | "in" | "ft" // length & circular
+  | "pc/s"; // quantity
 
-export interface ProductDraft {
+export interface Product {
   id: number;
   title: string,
-  price: number | undefined;
-  quantity: number | undefined; 
-  unitMeasurement: UnitCode | undefined;
+  price: number;
+  quantity: number; 
+  unitMeasurement: UnitCode;
 };
 
 export interface Result {
     isOpen: boolean
+}
+
+export interface BestProduct {
+  id: number,
+  price: number
 }
