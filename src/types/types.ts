@@ -6,7 +6,7 @@ export type UnitCode =
   | "mg" | "g" | "kg" | "t"            // mass
   | "ml" | "l" | "m3"                 // volume
   | "mm" | "cm" | "m" | "km" | "in" | "ft" // length & circular
-  | "pc/s"; // quantity
+  | "pc"; // quantity
 
 export interface Product {
   id: number;

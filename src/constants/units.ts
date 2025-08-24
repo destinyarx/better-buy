@@ -13,7 +13,7 @@ export const UNIT_MEASUREMENT: Record<UnitType, UnitCode[]> = {
     volume: ['ml', 'l', 'm3'],
     length: ['mm', 'cm', 'm', 'km', 'in', 'ft'],
     circular: ['mm', 'cm', 'm', 'km', 'in', 'ft'],
-    quantity: ['pc/s'],
+    quantity: ['pc'],
 };
 
 export const DEFAULT_UNIT_MEASUREMENT: Record<UnitType, string> = {
@@ -21,7 +21,7 @@ export const DEFAULT_UNIT_MEASUREMENT: Record<UnitType, string> = {
     volume: 'ml',
     length: 'cm',
     circular: 'in',
-    quantity: 'pc/s',
+    quantity: 'pc',
 };
 
 export const LABEL: Record<UnitCode, string> = {
@@ -36,7 +36,7 @@ export const LABEL: Record<UnitCode, string> = {
     l: 'liters',
     m3: 'cubic meters',
 
-    // length
+    // length & circular
     mm: 'millimeters',
     cm: 'centimeters',
     m: 'meters',
@@ -44,18 +44,8 @@ export const LABEL: Record<UnitCode, string> = {
     in: 'inches',
     ft: 'feet',
 
-    // circular
-    diameter: 'diameter',
-    radius: 'radius',
-    circumference: 'circumference',
-    area: 'area',
-
     // quantity
-    pc: 'pieces',
-    dozen: 'dozen (12 pcs)',
-    pack: 'pack',
-    set: 'set',
-    unit: 'unit',
+    pc: 'piece/s',
 };
 
 export const ITEM_LOGO: Record<UnitType, string> = {
