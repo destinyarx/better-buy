@@ -32,9 +32,9 @@ export default function ProductsForm() {
   const emptyRow = useCallback((): Product => ({ 
     id: id++, 
     title: '', 
-    price: null, 
-    quantity: null, 
-    basePrice: null,
+    price: 0, 
+    quantity: 0, 
+    basePrice: 0,
     unitMeasurement: DEFAULT_UNIT_MEASUREMENT[unit] as UnitCode 
   }), [unit]);
   
