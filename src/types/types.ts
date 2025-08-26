@@ -11,8 +11,8 @@ export type UnitCode =
 export interface Product {
   id: number;
   title: string,
-  price: number;
-  quantity: number; 
+  price: number|null;
+  quantity: number|null; 
   unitMeasurement: UnitCode;
 };
 

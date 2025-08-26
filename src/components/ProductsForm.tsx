@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { UnitType, UnitCode, Currency, Product } from '@/types/types'
 import { UNIT_MEASUREMENT, DEFAULT_UNIT_MEASUREMENT, LABEL, ITEM_LOGO } from '@/constants/units'
-import { formatMoney } from '@/utils/format';
+import { formatMoney, formatToDecimals } from '@/utils/format';
 import { getBestProduct } from '@/utils/compare'
 import Image from 'next/image';
 
@@ -25,11 +25,11 @@ import { ChevronRight, Plus, Trash2, Calculator } from 'lucide-react';
 let id = 0;
 
 export default function ProductsForm() {
-  const [unit, setUnit] = useState<UnitType>('mass');
-  const [currency, setCurrency] = useState<Currency>('PHP');
+  const [unit, setUnit]               = useState<UnitType>('mass');
+  const [currency, setCurrency]       = useState<Currency>('PHP');
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   
-  const emptyRow = useCallback((): Product => ({ id: id++, title: '', price: 0, quantity: 0, unitMeasurement: DEFAULT_UNIT_MEASUREMENT[unit] as UnitCode }), [unit]);
+  const emptyRow = useCallback((): Product => ({ id: id++, title: '', price: null, quantity: null, unitMeasurement: DEFAULT_UNIT_MEASUREMENT[unit] as UnitCode }), [unit]);
   const [rows, setRows] = useState<Product[]>([]);
 
   // Initialize and reset rows when unit changes
@@ -38,8 +38,8 @@ export default function ProductsForm() {
   }, [emptyRow]);
   
 
-  const addRow = () => setRows((prev) => [...prev, emptyRow()]);
-  const clearAll = () => setRows([emptyRow()]);
+  const addRow    = () => setRows((prev) => [...prev, emptyRow()]);
+  const clearAll  = () => setRows([emptyRow()]);
   const removeRow = (id: number) => 
     setRows((prev) => (prev.length === 1 ? prev : prev.filter((row) => row.id !== id)));
 
@@ -48,24 +48,18 @@ export default function ProductsForm() {
   };
 
   const computePerUnit = useCallback(
-    (price: number|undefined, quantity: number|undefined) => {
+    (price: number|null, quantity: number|null) => {
       if (!price || !quantity) return null;
 
       return price / quantity;
     },
   []);
 
-  const validateFields = () => {
 
-    return true
-  }
 
   const onCalculate = (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log(rows)
-
-    if (!validateFields) return
 
     console.log(getBestProduct(rows, unit))
 
@@ -113,6 +107,7 @@ export default function ProductsForm() {
         <CardContent className="p-0">
           {rows.map((row, idx) => {
             const perUnit = computePerUnit(row.price, row.quantity);
+
             return (
               <div key={row.id} className="px-6 py-6">
                 <div className="grid items-start gap-10 lg:grid-cols-[5%_auto_17%_22%_12%_5%]">
@@ -204,9 +199,11 @@ export default function ProductsForm() {
 
                   <div className="mt-7 flex justify-center items-center">
                     <ChevronRight className="h-6 w-6 text-muted-foreground" aria-hidden />
-                    <div className="text-lg font-semibold tabular-nums">
-                      {perUnit == null ? "—" : `${formatMoney(perUnit, currency)} / ${row.unitMeasurement}`}
-                    </div>
+                    { (row.price && row.quantity) &&
+                      <div className="text-lg font-semibold tabular-nums">
+                        {`${formatToDecimals(computePerUnit(row.price, row.quantity))} / ${row.unitMeasurement}`}
+                      </div>
+                    }
                   </div>
 
                   {/* Delete product */}
