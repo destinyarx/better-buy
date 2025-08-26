@@ -1,4 +1,6 @@
-import { Product } from '@/types/types'
+import { Product, UnitType, Currency } from '@/types/types'
+import { formatMoney, formatToDecimals } from '@/utils/format';
+import { DEFAULT_UNIT_MEASUREMENT } from '@/constants/units'
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -12,11 +14,15 @@ import { Plus } from 'lucide-react';
 export default function ResultModal(
     { 
         products,
+        unit,
+        currency,
         isModalOpen, 
         setIsModalOpen 
     }: 
     {
         products: Product[], 
+        unit: UnitType,
+        currency: Currency,
         isModalOpen: boolean,
         setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>
     }) {
@@ -31,7 +37,7 @@ export default function ResultModal(
             open={isModalOpen} 
             onOpenChange={setIsModalOpen}
         >
-            <DialogContent className="w-[85vw] min-w-[55rem] max-w-5xl max-h-[85vh] left-1/2 top-[5%] -translate-x-1/2 translate-y-0 overflow-y-auto">
+            <DialogContent className="w-[85vw] min-w-[60rem] max-w-5xl max-h-[85vh] left-1/2 top-[5%] -translate-x-1/2 translate-y-0 overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>
                         <div className="text-2xl">
@@ -41,15 +47,47 @@ export default function ResultModal(
                 </DialogHeader>
 
                 <div className="font-black">
+                    <div className="flex flex-row items-center justify-between border p-2 rounded">
+                        <div className="w-[40%]">
+                            Product Name
+                        </div>
+
+                        <div className="w-[20%]">
+                            Price
+                        </div>
+
+                        <div className="w-[20%]">
+                           Quantity
+                        </div>
+
+                        <div className="w-[20%]">
+                            Price per base unit
+                        </div>
+                    </div>
+
                     {products.map((product) => (
-                        <div key={product.id} className="flex items-center justify-between border p-2 rounded">
-                            <span>{product.title}</span>
-                            <span>
-                                {product.quantity ?? 0} {product.unitMeasurement ?? ""}
-                            </span>
-                            <span>
-                                {product.price !== undefined ? `$${product.price}` : "N/A"}
-                            </span>
+                        <div key={product.id} className="flex flex-row items-center justify-between border p-2 rounded">
+                            <div className="w-[40%]">
+                                {product.title}
+                            </div>
+
+                            <div className="w-[20%]">
+                                {  
+                                    product.price && 
+                                    formatMoney(product.price, currency)
+                                } 
+                            </div>
+
+                            <div className="w-[20%]">
+                                {product.quantity} {product.unitMeasurement}
+                            </div>
+
+                            <div className="w-[20%]">
+                                {  
+                                    product.basePrice && 
+                                    `${formatMoney(product.basePrice, currency)} / ${(DEFAULT_UNIT_MEASUREMENT[unit])}`
+                                } 
+                            </div>
                         </div>
                     ))}
                 </div>

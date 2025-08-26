@@ -10,7 +10,6 @@ export function getBestProduct(products: Product[], unit: UnitType) {
         // Convert product amount into the default unit
         const normalizedAmount = product.quantity * CONVERSION_TABLE[unit][product.unitMeasurement]
         const pricePerUnit = product.price / normalizedAmount;
-        console.log(pricePerUnit)
     
         if (!bestValueProduct || pricePerUnit < bestValueProduct.price) {
           bestValueProduct = {

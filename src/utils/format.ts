@@ -6,7 +6,8 @@ export function formatMoney(n: number, currency: Currency) {
         return new Intl.NumberFormat(currency === "PHP" ? "en-PH" : undefined, {
             style: 'currency',
             currency,
-            minimumFractionDigits: 2,
+            minimumFractionDigits: 0, 
+            maximumFractionDigits: 4,
         }).format(n ?? 0);
     } catch {
         return `${currency} ${n}`;
@@ -15,7 +16,7 @@ export function formatMoney(n: number, currency: Currency) {
 
 export function formatToDecimals(number: number|null) {
     if (!number) return null
-    
+
     const str = number.toString();
     const parts = str.split(".");
   

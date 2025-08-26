@@ -9,11 +9,12 @@ export type UnitCode =
   | "pc"; // quantity
 
 export interface Product {
-  id: number;
-  title: string,
-  price: number|null;
-  quantity: number|null; 
-  unitMeasurement: UnitCode;
+  id: number
+  title: string
+  price: number|null
+  quantity: number|null
+  basePrice: number|null
+  unitMeasurement: UnitCode
 };
 
 export interface Result {
