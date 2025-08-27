@@ -64,6 +64,15 @@ export const Q_PLACEHOLDER: Record<UnitType, string> = {
     quantity: '1',
 };
 
+export const UNIT_ICON: Record<UnitType, string[]> = {
+  mass: ["🍞","🧀","🥩","🍎","🥔","🍫"],
+  volume: ["🥤","🥛","🧃","🍶","🧴","🚰"],
+  length: ["🪢","📏","🪡","🪵","🧵","⛓️"],
+  circular: ["🍕","🍩","🥯","🥚","🥫","🍪"],
+  quantity: ["🥚","🍇","🍒","🍓","🍊","🥝"]
+};
+
+
 // Conversion factors relative to default unit
 export const CONVERSION_TABLE: Record<UnitType, Record<string, number>> = {
     mass: {

@@ -31,12 +31,21 @@ export default function ProductsForm() {
   
   const emptyRow = useCallback((): Product => ({ 
     id: id++, 
-    title: '', 
-    price: 0, 
-    quantity: 0, 
-    basePrice: 0,
+    title: 'Product Number 1', 
+    price: 10, 
+    quantity: 10, 
+    basePrice: 10,
     unitMeasurement: DEFAULT_UNIT_MEASUREMENT[unit] as UnitCode 
   }), [unit]);
+
+  // const emptyRow = useCallback((): Product => ({ 
+  //   id: id++, 
+  //   title: '', 
+  //   price: 0, 
+  //   quantity: 0, 
+  //   basePrice: 0,
+  //   unitMeasurement: DEFAULT_UNIT_MEASUREMENT[unit] as UnitCode 
+  // }), [unit]);
   
   const [rows, setRows] = useState<Product[]>([]);
 
@@ -57,8 +66,6 @@ export default function ProductsForm() {
     setRows((prev) =>
       prev.map((row) => {
         if (row.id !== id) return row;
-
-        console.log('updated ' + field + '  ' + value)
   
         const updatedRow = {
           ...row,
@@ -83,8 +90,6 @@ export default function ProductsForm() {
       return price / quantity;
     },
   []);
-
-
 
   const onCalculate = (e: React.FormEvent) => {
     e.preventDefault();
