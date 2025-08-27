@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useRef } from 'react'
 import Image from 'next/image';
 import { Product, UnitType, Currency } from '@/types/types'
-import { formatMoney, formatToDecimals } from '@/utils/format';
+import { formatMoney } from '@/utils/format';
 import { DEFAULT_UNIT_MEASUREMENT, UNIT_ICON } from '@/constants/units'
 
 import { Badge } from "@/components/ui/badge"
@@ -16,7 +16,6 @@ import {
     Card,
     CardAction,
     CardContent,
-    CardDescription,
     CardFooter,
     CardHeader,
     CardTitle,

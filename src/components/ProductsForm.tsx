@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { UnitType, UnitCode, Currency, Product } from '@/types/types'
-import { UNIT_MEASUREMENT, DEFAULT_UNIT_MEASUREMENT, CONVERSION_TABLE, LABEL, ITEM_LOGO } from '@/constants/units'
+import { UNIT_MEASUREMENT, DEFAULT_UNIT_MEASUREMENT, CONVERSION_TABLE, LABEL, ITEM_LOGO, UNIT_ICON } from '@/constants/units'
 import { formatMoney, formatToDecimals } from '@/utils/format';
 import { getBestProduct } from '@/utils/compare'
 import Image from 'next/image';
@@ -29,23 +29,24 @@ export default function ProductsForm() {
   const [currency, setCurrency]       = useState<Currency>('PHP');
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   
-  const emptyRow = useCallback((): Product => ({ 
-    id: id++, 
-    title: 'Product Number 1', 
-    price: 10, 
-    quantity: 10, 
-    basePrice: 10,
-    unitMeasurement: DEFAULT_UNIT_MEASUREMENT[unit] as UnitCode 
-  }), [unit]);
-
+  // // for testing purpose only
   // const emptyRow = useCallback((): Product => ({ 
   //   id: id++, 
-  //   title: '', 
-  //   price: 0, 
-  //   quantity: 0, 
-  //   basePrice: 0,
+  //   title: 'Product Number 1', 
+  //   price: 10, 
+  //   quantity: 10, 
+  //   basePrice: 10,
   //   unitMeasurement: DEFAULT_UNIT_MEASUREMENT[unit] as UnitCode 
   // }), [unit]);
+
+  const emptyRow = useCallback((): Product => ({ 
+    id: id++, 
+    title: '', 
+    price: 0, 
+    quantity: 0, 
+    basePrice: 0,
+    unitMeasurement: DEFAULT_UNIT_MEASUREMENT[unit] as UnitCode 
+  }), [unit]);
   
   const [rows, setRows] = useState<Product[]>([]);
 
@@ -141,14 +142,11 @@ export default function ProductsForm() {
               return (
                 <div key={row.id} className="px-6 py-6">
                   <div className="grid items-start gap-10 lg:grid-cols-[5%_auto_17%_22%_12%_5%]">
-                    <Image
-                      src={ITEM_LOGO[unit]}
-                      alt="Water Bottle Logo"
-                      width={60}             
-                      height={60}
-                      className="rounded-lg ml-4"
-                      priority               
-                    />
+                    
+
+                    <div className="flex justify-center text-[3.5rem]">
+                      {UNIT_ICON[unit][row.id%6]}
+                    </div>
 
                     {/* Product Name */}
                     <div className="space-y-2">
