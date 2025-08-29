@@ -1,9 +1,9 @@
 import { Currency } from '@/types/types'
 
 
-export function formatMoney(n: number, currency: Currency) {
+export function formatMoney(n: number, currency?: Currency) {
     try {
-        return new Intl.NumberFormat(currency === "PHP" ? "en-PH" : undefined, {
+        return new Intl.NumberFormat(currency && currency === "PHP" ? "en-PH" : undefined, {
             style: 'currency',
             currency,
             minimumFractionDigits: 0, 
@@ -27,6 +27,18 @@ export function formatToDecimals(number: number|null) {
     if (decimals.length <= 4) return str;
   
     return Number(number).toFixed(4);
+}
+
+
+export function formatDate(ms: number) {
+    return new Date(ms).toLocaleString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    })
 }
 
 

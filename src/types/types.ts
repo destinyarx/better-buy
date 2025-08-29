@@ -17,6 +17,17 @@ export interface Product {
   unitMeasurement: UnitCode
 };
 
+export interface ShoppingList {
+  id: number
+  title: string
+  price: number
+  quantity: number
+  unit: UnitType
+  unitMeasurement: UnitCode,
+  createdAt: number,
+  savingsPercentage: string,
+}
+
 export interface Result {
     isOpen: boolean
 }

@@ -1,6 +1,6 @@
-import { useRef } from 'react'
+import { useProductStore } from '@/stores/productStore'
 import Image from 'next/image';
-import { Product, UnitType, Currency } from '@/types/types'
+import { Product, UnitType, Currency, ShoppingList } from '@/types/types'
 import { formatMoney } from '@/utils/format';
 import { DEFAULT_UNIT_MEASUREMENT, UNIT_ICON } from '@/constants/units'
 
@@ -39,9 +39,6 @@ export default function ResultModal(
         setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>
     }) {
 
-    const prev = useRef(isModalOpen);
-    const hasMounted = useRef(false);
-
     const prices  = products.map(p => p.basePrice).filter(p => Number.isFinite(p) && p > 0);
     const sorted = [...prices].sort((a, b) => a - b);
     const lowest = sorted[0];
@@ -54,20 +51,26 @@ export default function ResultModal(
     const lowestPct = percentage(secondLowest, highest); 
     const highestPct = percentage(lowest, highest); 
 
-    console.log('secondLowest')
-    console.log(secondLowest)
+    // for shopping list
+    const addProducts = useProductStore((s) => s.addProduct) 
+    const clearProducts = useProductStore((s) => s.clear) 
+    const handleAddProduct = (product: Product) => {
+        const item: ShoppingList = {
+            id: product.id,
+            title: product.title,
+            price: product.price,
+            quantity: product.quantity,
+            unit: unit,
+            unitMeasurement: product.unitMeasurement,
+            createdAt:  Date.now(),
+            savingsPercentage: 'Save up to 10% - 50%',
+        }
 
-   
-    // TODO: add persistent state management for shopping list
-    const addToCart = () => [
-
-    ]
+        addProducts(item)
+    }
 
     return (
-        <Dialog 
-            open={isModalOpen} 
-            onOpenChange={setIsModalOpen}
-        >
+        <Dialog  open={isModalOpen} onOpenChange={setIsModalOpen}>
             <DialogContent className="w-[85vw] min-w-[70rem] max-w-7xl max-h-[85vh] left-1/2 top-[5%] -translate-x-1/2 translate-y-0 overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>
@@ -80,7 +83,7 @@ export default function ResultModal(
                 <div className="font-black dark:text-zinc-50">
                     <div className="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-3 gap-3 my-4">
                         {products.map((product, index) => (
-                            <Card key="product.id">
+                            <Card key={product.id}>
                                 <CardHeader>
                                      {lowest === product.basePrice && (
                                         <CardTitle>
@@ -113,14 +116,14 @@ export default function ResultModal(
                                 </CardHeader>
                                 <CardContent>
                                     <div className={`text-9xl ${lowest === product.basePrice ? "-mt-5" : ""}`}>
-                                        {UNIT_ICON[unit][index%6]}
+                                        {UNIT_ICON[unit][product.id%6]}
                                     </div>
 
                                     <div className="flex justify-center text-xl mt-1">
                                         {product.title}
                                     </div>
 
-                                    <div className="flex flex-row justify-between text-[1.6rem] text-gray-500">
+                                    <div className="flex flex-row justify-between text-[1.6rem] font-semibold text-gray-500 dark:text-zinc-50 italic">
                                         <div>
                                             {formatMoney(product.price, currency)}
                                         </div>
@@ -137,13 +140,11 @@ export default function ResultModal(
                                     </div>
                                 </CardContent>
 
-                                <CardFooter className="flex justify-center">
-                                    <div>
-                                        <Button type="button" variant="outline" onClick={addToCart} className="justify-start bg-green-500 text-white">
-                                            <Plus className="h-4 w-4 text-white" />
-                                            Add to List
-                                        </Button>
-                                    </div>
+                                <CardFooter className="flex flex-row justify-center">
+                                    <Button type="button" variant="outline" onClick={() => handleAddProduct(product)} className="justify-start bg-green-500 text-white">
+                                        <Plus className="h-4 w-4 text-white" />
+                                        Add to List
+                                    </Button>
                                 </CardFooter>
                             </Card>
                         ))}
