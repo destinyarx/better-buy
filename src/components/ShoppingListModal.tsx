@@ -51,6 +51,12 @@ export default function ShoppingList({
                     </DialogDescription>
                 </DialogHeader>
 
+                <div className="flex justify-end -mt-5">
+                    <Button onClick={() => clearProduct()} variant="destructive">
+                        Clear All
+                    </Button>
+                </div>
+
                 <div className="space-y-3">
                     <div className="rounded-md border">
                         <Table>
@@ -98,7 +104,7 @@ export default function ShoppingList({
                                             size="icon"
                                             onClick={() => deleteProduct(product.createdAt)}
                                         >
-                                            <Trash2 className="h-8 w-8 text-red-600" />
+                                            <Trash2 className="h-10 w-10 text-red-600" />
                                         </Button>
                                             
                                         </TableCell>
@@ -144,13 +150,6 @@ export default function ShoppingList({
                             </Button>
                         </div>
                     </div>
-                </div>
-
-
-                <div className="flex justify-end mt-5">
-                    <Button onClick={() => clearProduct()} variant="destructive">
-                        Clear All
-                    </Button>
                 </div>
             </DialogContent>
         </Dialog>
