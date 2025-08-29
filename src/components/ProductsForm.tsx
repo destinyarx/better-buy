@@ -28,23 +28,23 @@ export default function ProductsForm() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   
   // for testing purpose only
-  const emptyRow = useCallback((): Product => ({ 
-    id: id++, 
-    title: 'Product #1', 
-    price: 10, 
-    quantity: 10, 
-    basePrice: 10,
-    unitMeasurement: DEFAULT_UNIT_MEASUREMENT[unit] as UnitCode 
-  }), [unit]);
-
   // const emptyRow = useCallback((): Product => ({ 
   //   id: id++, 
-  //   title: '', 
-  //   price: 0, 
-  //   quantity: 0, 
-  //   basePrice: 0,
+  //   title: 'Product #1', 
+  //   price: 10, 
+  //   quantity: 10, 
+  //   basePrice: 10,
   //   unitMeasurement: DEFAULT_UNIT_MEASUREMENT[unit] as UnitCode 
   // }), [unit]);
+
+  const emptyRow = useCallback((): Product => ({ 
+    id: id++, 
+    title: '', 
+    price: 0, 
+    quantity: 0, 
+    basePrice: 0,
+    unitMeasurement: DEFAULT_UNIT_MEASUREMENT[unit] as UnitCode 
+  }), [unit]);
   
   const [rows, setRows] = useState<Product[]>([]);
 

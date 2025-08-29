@@ -1,10 +1,10 @@
 'use client'
 
-import Link from 'next/link';
 import { useState } from 'react'
+import Image from 'next/image';
+
 
 import ShoppingListModal from '@/components/ShoppingListModal'
-import { Button } from '@/components/ui/button';
 import { ShoppingCartIcon } from 'lucide-react'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
@@ -19,15 +19,30 @@ export default function Header() {
   return (
     <>
       <header className="w-full border-b bg-white dark:bg-gray-900 dark:text-zinc-50 shadow-sm">
-        <div className="flex justify-between p-4">
-          <h1 className="text-3xl font-bold">BetterBuy</h1>
+        <div className="flex justify-between p-2">
 
-          <nav className="flex gap-6">
+
+          <div className="w-fit flex items-center gap-3 rounded-2xl bg-slate-800 p-1 sm:p-4 shadow overflow-hidden -mt-1">
+            <div className="relative h-10 w-14 shrink-0">
+              <Image
+                src="/better-buy-logo.png"
+                alt="Water Bottle Logo"
+                width={80}             
+                height={80}
+                className="rounded-lg object-cover -mt-2"
+                priority
+              />
+            </div>
+            <h1 className="text-3xl font-bold text-white">BetterBuy</h1>
+          </div>
+
+
+          <nav className="flex gap-6 mr-2 mt-2">
             <div 
               onClick={() => setShowModal(!showModal)} 
-              className='flex flex-row items-center relative w-fit'
+              className='flex flex-row items-center relative w-fit h-fit'
             >
-              <div>
+              <div className="text-xl font-semibold mr-1">
                 Shopping List
               </div>
 
