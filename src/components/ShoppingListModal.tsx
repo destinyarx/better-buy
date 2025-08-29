@@ -65,7 +65,7 @@ export default function ShoppingList({
                                     <TableHead>Title</TableHead>
                                     <TableHead className="text-center">Price</TableHead>
                                     <TableHead className="text-center">Qty</TableHead>
-                                    <TableHead className="text-center">Created</TableHead>
+                                    <TableHead className="text-center">Date Added</TableHead>
                                     <TableHead className="text-center">Action</TableHead>
                                 </TableRow>
                             </TableHeader>
